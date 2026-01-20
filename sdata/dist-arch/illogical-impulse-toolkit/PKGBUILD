@@ -8,4 +8,5 @@ depends=(
   upower
   wtype
   ydotool
+  fastfetch
 )

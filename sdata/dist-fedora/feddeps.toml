@@ -179,7 +179,8 @@ packages = [
 packages = [
   "upower",
   "wtype",
-  "ydotool"
+  "ydotool",
+  "fastfetch"
 ]
 
 # Widgets
