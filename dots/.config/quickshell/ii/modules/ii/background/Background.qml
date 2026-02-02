@@ -80,8 +80,10 @@ Variants {
             right: true
         }
         color: {
-            if (!bgRoot.wallpaperSafetyTriggered || bgRoot.wallpaperIsVideo)
+            if ((!bgRoot.wallpaperSafetyTriggered || bgRoot.wallpaperIsVideo) && !GlobalStates.screenLocked)
                 return "transparent";
+            if (GlobalStates.screenLocked)
+                return "transparent"; // Always transparent when locked to show wallpaper
             return CF.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.75);
         }
         Behavior on color {
@@ -134,7 +136,7 @@ Variants {
 
                 StyledImage {
                     id: wallpaper
-                    visible: opacity > 0 && !blurLoader.active
+                    visible: opacity > 0
                     opacity: (status === Image.Ready && !bgRoot.wallpaperIsVideo) ? 1 : 0
                     cache: false
                     // Range = groups that workspaces span on
@@ -163,7 +165,7 @@ Variants {
                     property real effectiveValueY: Math.max(0, Math.min(1, valueY))
                     x: -(bgRoot.movableXSpace) - (effectiveValueX - 0.5) * 2 * bgRoot.movableXSpace
                     y: -(bgRoot.movableYSpace) - (effectiveValueY - 0.5) * 2 * bgRoot.movableYSpace
-                    source: bgRoot.wallpaperSafetyTriggered ? "" : bgRoot.wallpaperPath
+                    source: (bgRoot.wallpaperSafetyTriggered && !GlobalStates.screenLocked) ? "" : bgRoot.wallpaperPath
                     fillMode: Image.PreserveAspectCrop
                     Behavior on x {
                         NumberAnimation {
@@ -187,6 +189,18 @@ Variants {
                     }
                     width: bgRoot.wallpaperWidth / bgRoot.wallpaperToScreenRatio * bgRoot.effectiveWallpaperScale
                     height: bgRoot.wallpaperHeight / bgRoot.wallpaperToScreenRatio * bgRoot.effectiveWallpaperScale
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 600
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 600
+                            easing.type: Easing.OutCubic
+                        }
+                    }
                 }
             }
 
@@ -195,6 +209,7 @@ Variants {
                 active: Config.options.lock.blur.enable && (GlobalStates.screenLocked || scaleAnim.running)
                 anchors.fill: wallpaperContainer
                 scale: GlobalStates.screenLocked ? Config.options.lock.blur.extraZoom : 1
+                asynchronous: true
                 Behavior on scale {
                     NumberAnimation {
                         id: scaleAnim
