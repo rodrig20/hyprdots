@@ -9,7 +9,7 @@ ColumnLayout {
     property string title
     property string icon: ""
     property alias headerExtra: headerExtraContainer.data
-    default property alias data: sectionContent.data
+    default property alias contentData: sectionContent.data
 
     Layout.fillWidth: true
     spacing: 6
